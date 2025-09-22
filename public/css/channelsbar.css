@@ -1,0 +1,219 @@
+:root{
+  --serversbar-w: 72px;          /* ya definida en serversbar.css */
+  --channelsbar-w: 300px;
+
+  --layer-bg: #26272C;           /* columna base */
+  --panel-bg: #34373C;           /* tarjetas */
+  --panel-bg-2: #313338;         /* inputs */
+  --border: #3b3d44;
+  --text-1: #e6e7eb;
+  --text-2: #b9bbbe;
+  --text-3: #34373C;
+  --accent: #8b5cf6;             /* morado */
+  --radius: 12px;
+}
+
+.channelsbar{
+  position: fixed;
+  top: 0;
+  left: var(--serversbar-w);
+  bottom: 0;
+  width: var(--channelsbar-w);
+  background: var(--layer-bg);
+  display: grid;
+  grid-template-rows: auto auto 1fr auto; /* top, server-card, scroll, usercard */
+  gap: 12px;
+  padding: 12px;
+  box-sizing: border-box;
+  z-index: 250;
+}
+
+/* --- fila superior --- */
+.channelsbar__top{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+.channelsbar__search{
+  display: grid; grid-template-columns: 20px 1fr; align-items: center;
+  gap: 8px; background: var(--panel-bg-2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 8px 10px; color: var(--text-2);
+}
+.channelsbar__search input{
+  background: transparent; border: none; outline: none; color: var(--text-1);
+  font-size: 14px;
+}
+.channelsbar__icon{
+  width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--panel-bg-2); color: var(--text-2); display: grid; place-items: center;
+  cursor: pointer; transition: .15s;
+}
+.channelsbar__icon:hover{ color: #fff; border-color: #50535b; }
+
+/* --- tarjeta del servidor --- */
+.server-card{
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.server-card__banner{
+  width: 100%; height: 110px; object-fit: cover; display: block;
+}
+.server-card__title{
+  display: grid; grid-template-columns: 28px 1fr; align-items: center; gap: 8px;
+  padding: 10px 12px; color: var(--text-1);
+}
+.server-card__logo{
+  width: 28px; height: 28px; border-radius: 50%; object-fit: cover; display: block;
+}
+
+/* --- lista scrollable --- */
+.channelsbar__scroll{
+  overflow-y: auto; padding-right: 4px;
+  scrollbar-width: thin; scrollbar-color: #50535b transparent;
+}
+.channelsbar__scroll::-webkit-scrollbar{ width: 8px; }
+.channelsbar__scroll::-webkit-scrollbar-thumb{ background:#50535b; border-radius:10px; }
+
+/* Categoría (details/summary) */
+.cat {
+  margin-bottom: 6px;
+}
+.cat__header {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: left;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-2);
+  padding: 4px 6px;
+  transition: color .2s;
+}
+.cat__header:hover {
+  color: var(--text-1);
+}
+.cat__header::-webkit-details-marker { display: none; }
+.cat[open] .cat__header i { transform: rotate(180deg); }
+/* Canales */
+.chanlist {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+.cat__icon{
+  width: 16px; height: 16px; flex: 0 0 16px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: inline-grid; place-items: center;
+}
+.cat__icon img{
+  width: 100%; height: 100%;
+  margin-top: 2px;
+  object-fit: cover; display: block;
+}
+.chan {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: var(--text-3);
+  color: var(--text-2);
+  border-radius: 6px;
+  padding: 0 8px;
+  font-size: 14px;
+
+  font-weight: 600;   /* 👈 Bold para todos los canales */
+
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.chan i{ color: var(--text-2); }
+.chan:hover{ border-color:#50535b; background:#34363b; }
+.chan.is-active{ outline: 2px solid var(--accent); }
+
+/* --- footer de usuario --- */
+.usercard{
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px;
+  background: var(--panel-bg); border:1px solid var(--border);
+  border-radius: var(--radius); padding: 10px 12px; color: var(--text-1);
+}
+.usercard__avatar{ position: relative; width: 36px; height: 36px; }
+.usercard__avatar img{ width: 100%; height: 100%; border-radius: 50%; display:block; object-fit:cover; }
+.status{
+  position: absolute; right: -2px; bottom: -2px; width: 12px; height:12px; border-radius: 50%;
+  border: 2px solid var(--panel-bg);
+}
+.online{ background:#23a55a; }
+.usercard__meta{ display:flex; flex-direction:column; line-height:1.1; }
+.usercard__name{ font-size: 13px; font-weight: 600; }
+.usercard__id{ font-size: 11px; color: var(--text-2); }
+.usercard__btn{
+  width: 36px; height: 36px; border-radius: 10px; border:1px solid var(--border);
+  background: var(--panel-bg-2); color: var(--text-2);
+  display:grid; place-items:center; cursor:pointer; transition:.15s;
+}
+.usercard__btn:hover{ color:#fff; border-color:#50535b; }
+
+/* --- empujar el chat a la derecha de ambas barras --- */
+.chat-container{ margin-left: calc(var(--serversbar-w) + var(--channelsbar-w)); }
+.chat-header{ left: calc(var(--serversbar-w) + var(--channelsbar-w)); }
+/* === Banner del servidor (estilo Figma) === */
+.server-banner{
+  height: 150px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
+  /* fondo con 2 capas: gradiente para contraste + imagen */
+  background-image:
+    linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 100%),
+    var(--banner-url);
+  background-size: cover;
+  background-position: center;
+  box-shadow:
+    0 1px 0 rgba(0,0,0,0.35) inset,
+    0 0 0 2px rgba(0,0,0,0.06) inset; /* borde interior suave */
+}
+
+/* Contenido superpuesto (logo + título) */
+.server-banner__content{
+  position: absolute;
+  left: 9px;
+  right: 9px;
+  top: 10px;      
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.server-banner__logo{
+  width: 35px;
+  height: 35px;
+  object-fit: cover;
+  display: block;
+  margin-bottom: 35px;
+
+}
+
+.server-banner__title{
+  margin: 0;
+  color: #fff;
+  font-size: 18px;       /* súbelo a 26–28 si lo quieres más grande */
+  font-weight: 800;      /* Bold tipo “display” */
+  letter-spacing: 0.2px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.45);
+  margin-bottom: 40px;
+}
+
+/* Ajuste responsive opcional */
+@media (max-width: 1200px){
+  .server-banner{ height: 140px; }
+  .server-banner__title{ font-size: 22px; }
+}

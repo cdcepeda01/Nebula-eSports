@@ -1,0 +1,83 @@
+[
+  {
+    "id": 1,
+    "name": "LordAdmin",
+    "password": "1234",
+    "email": "admin@chat.com",
+    "rol": "admin",
+    "img": "https://i.pravatar.cc/150?img=1"
+  },
+  {
+    "id": 2,
+    "name": "BrainerXD",
+    "password": "1234",
+    "email": "user2@chat.com",
+    "rol": "user",
+    "img": "https://i.pravatar.cc/150?img=2"
+  },
+  {
+    "id": 3,
+    "name": "ParasiteGamer",
+    "password": "abcd",
+    "email": "user3@chat.com",
+    "rol": "user",
+    "img": "https://i.pravatar.cc/150?img=3"
+  },
+  {
+    "id": 4,
+    "name": "OverlordX",
+    "password": "adminpass",
+    "email": "overlordx@chat.com",
+    "rol": "admin",
+    "img": "https://i.pravatar.cc/150?img=4"
+  },
+  {
+    "id": 5,
+    "name": "RootMaster",
+    "password": "adminpass",
+    "email": "rootmaster@chat.com",
+    "rol": "admin",
+    "img": "https://i.pravatar.cc/150?img=5"
+  },
+  {
+    "id": 6,
+    "name": "SysSentinel",
+    "password": "adminpass",
+    "email": "syssentinel@chat.com",
+    "rol": "admin",
+    "img": "https://i.pravatar.cc/150?img=6"
+  },
+  {
+    "id": 7,
+    "name": "PixelKnight",
+    "password": "gamer123",
+    "email": "pixelknight@chat.com",
+    "rol": "user",
+    "img": "https://i.pravatar.cc/150?img=7"
+  },
+  {
+    "id": 8,
+    "name": "NeoMage",
+    "password": "gamer123",
+    "email": "neomage@chat.com",
+    "rol": "user",
+    "img": "https://i.pravatar.cc/150?img=8"
+  },
+  {
+    "id": 9,
+    "name": "ByteSlayer",
+    "password": "gamer123",
+    "email": "byteslayer@chat.com",
+    "rol": "user",
+    "img": "https://i.pravatar.cc/150?img=9"
+  },
+  {
+    "id": 10,
+    "name": "ShadowCoder",
+    "password": "gamer123",
+    "email": "shadowcoder@chat.com",
+    "rol": "user",
+    "img": "https://i.pravatar.cc/150?img=10"
+  }
+]
+

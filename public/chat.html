@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatApp - Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Radio+Canada:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+    <link rel="stylesheet" href="./css/global.css"/>
+    <link rel="stylesheet" href="./css/chat.css"/>
+    <link rel="stylesheet" href="./css/sidebar.css"/>
+    <link rel="stylesheet" href="./css/serversbar.css"/>
+    <link rel="stylesheet" href="./css/channelsbar.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+    <!-- Barra estática de servidores -->
+    <aside class="serversbar">
+    <a class="serversbar__logo" href="#" title="Compañía">
+        <img src="https://i.postimg.cc/DzThhWq6/logonebulaa.png" alt="Logo" />
+    </a>
+
+    <nav class="serversbar__list">
+        <!-- Ejemplos de servidores -->
+
+        <button class="serversbar__btn" title="Servidor 2">
+        <i class="fa-solid fa-users"></i>
+        </button>
+
+    </nav>
+    </aside>
+    <!-- Columna de categorías / canales -->
+    <aside class="channelsbar">
+    <!-- fila de búsqueda + acciones -->
+    <div class="channelsbar__top">
+        <div class="channelsbar__search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search" />
+        </div>
+        <button class="channelsbar__icon" title="Notificaciones">
+        <i class="fa-solid fa-bell"></i>
+        </button>
+    </div>
+
+    <!-- tarjeta del servidor -->
+    <div class="server-banner"
+        style="--banner-url: url('https://i.postimg.cc/ydz8f16g/Sin-t-tulo-2.png');">
+    <div class="server-banner__content">
+        <img class="server-banner__logo" src="https://i.postimg.cc/90Mbqpjp/isonebula.png" alt="Logo">
+        <h4 class="server-banner__title">Nebula Server</h4>
+    </div>
+    </div>
+
+    <!-- lista scrollable -->
+    <div class="channelsbar__scroll">
+        <!-- Ejemplo con <details> para tener colapsables sin JS -->
+        <details open class="cat">
+        <summary class="cat__header">
+            <div class="cat__left">
+            <span class="cat__icon">
+                <img src="https://i.postimg.cc/90Mbqpjp/isonebula.png" alt="" />
+            </span>
+            <span class="cat__label">CANALES GENERALES</span>
+            </div>
+            <i class="fa-solid fa-chevron-down"></i>
+        </summary>
+        <nav class="chanlist">
+            <button class="chan is-active" type="button" data-channel-id="general"  data-channel-name="General">💬 <span>General</span></button>
+            <button class="chan"           type="button" data-channel-id="gaming"   data-channel-name="Gaming">🎮 <span>Gaming</span></button>
+            <button class="chan"           type="button" data-channel-id="ideas"    data-channel-name="Sugerencias">💡 <span>Sugerencias</span></button>
+        </nav>
+        </details>
+
+        <details class="cat">
+        <summary class="cat__header">
+            <div class="cat__left">
+            <span class="cat__icon">
+                <img src="https://i.postimg.cc/90Mbqpjp/isonebula.png" alt="" />
+            </span>
+            <span class="cat__label">TORNEOS</span>
+            </div>
+            <i class="fa-solid fa-chevron-down"></i>
+        </summary>
+        <nav class="chanlist">
+            <button class="chan"           type="button" data-channel-id="leagueoflegends"  data-channel-name="League of Legends">🕹️ <span>League of Legends</span></button>
+            <button class="chan"           type="button" data-channel-id="valorant"   data-channel-name="Valorant">🔥 <span>Valorant</span></button>
+            <button class="chan"           type="button" data-channel-id="fortnite"    data-channel-name="Fortnite">🏆 <span>Fortnite</span></button>
+        </nav>
+        </details>
+
+        <details class="cat">
+        <summary class="cat__header">
+                    <div class="cat__left">
+                    <span class="cat__icon">
+                        <img src="https://i.postimg.cc/90Mbqpjp/isonebula.png" alt="" />
+                    </span>
+                    <span class="cat__label">OTROS</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down"></i>
+        </summary>
+        <nav class="chanlist">
+            <button class="chan"           type="button" data-channel-id="ayuda"    data-channel-name="Ayuda">❓ <span>Ayuda</span></button>
+        </nav>
+        </details>
+    </div>
+
+    <!-- Footer de usuario -->
+    <div class="usercard">
+        <div class="usercard__avatar">
+        <img src="https://i.pravatar.cc/100?img=12" alt="">
+        <span class="status online"></span>
+        </div>
+        <div class="usercard__meta">
+        <div class="usercard__name">USER0001</div>
+        <div class="usercard__id">#0001 · En línea</div>
+        </div>
+        <button class="usercard__btn" title="Ajustes">
+        <i class="fa-solid fa-gear"></i>
+        </button>
+    </div>
+    </aside>
+    <div class="chat-container">
+        <header class="chat-header">
+            <h2 id="chat-username">Bienvenido</h2>
+            <div class="header-actions">
+                <button id="usersToggle" class="icon-btn"><i class="fa-solid fa-users"></i></button>
+                <button id="logoutBtn" class="icon-btn"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </header>
+
+        <main class="chat-main">
+            <div id="messages" class="messages"></div>
+        </main>
+
+        <form id="chatForm" class="chat-input">
+        <div class="chat-input__inner">
+            <button type="button" class="emoji-btn">
+            <i class="fa-regular fa-face-smile"></i>
+            </button>
+            <input type="text" id="messageInput" placeholder="Enviar mensaje a CANAL 1" autocomplete="off" required/>
+            <button type="submit" class="send-btn">
+            <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+        <div class="emoji-picker-wrapper">
+            <emoji-picker id="emojiPicker"></emoji-picker>
+        </div>
+
+        </form>
+    </div>
+        
+
+    <!-- Sidebar de usuarios -->
+        <aside id="userSidebar" class="user-sidebar">
+        <div class="members__header">
+            <div class="members__title">
+            <i class="fa-solid fa-users"></i>
+            <span>Miembros</span>
+            </div>
+            <button id="closeSidebar" class="icon-btn" aria-label="Cerrar">
+            <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="members__scroll" id="membersScroll">
+            <!-- Grupos renderizados por JS -->
+            <!--
+            <section class="role-group">
+            <h4 class="role-group__title">
+                Administradores <span class="count">3</span>
+            </h4>
+            <ul class="member-list">
+                <li class="member">
+                <span class="member__avatar" style="--ring:#f97373">
+                    <img src="..." alt="">
+                </span>
+                <div class="member__meta">
+                    <div class="member__name">MIEMBRO #4141</div>
+                    <div class="member__sub">#4141</div>
+                </div>
+                <span class="member__status online"></span>
+                </li>
+            </ul>
+            </section>
+            -->
+        </div>
+        </aside>
+
+
+    <script type="module" src="./js/chat.js"></script>
+</body>
+</html>

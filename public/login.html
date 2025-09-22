@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nebula eSports — Iniciar sesión</title>
+  <link href="https://fonts.googleapis.com/css2?family=Radio+Canada:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/login.css" />
+</head>
+<body>
+  <main class="login-container" role="main" aria-labelledby="title">
+    <h1 id="title">¡Bienvenido a Nebula eSports!</h1>
+    <p class="subtitle">¡Nos encanta que hagas parte de nuestro equipo!</p>
+
+    <form id="loginForm" class="login-form" novalidate>
+      <label for="username">Nombre de usuario <span class="req">*</span></label>
+      <input type="text" id="username" name="username" placeholder="Usuario" autocomplete="username" required />
+
+      <label for="password">Contraseña <span class="req">*</span></label>
+      <input type="password" id="password" name="password" placeholder="••••••••••••••" autocomplete="current-password" required />
+
+      <button type="submit" class="btn-primary">Iniciar sesión</button>
+      <p id="loginError" class="error" aria-live="polite"></p>
+    </form>
+
+    <div class="divider"><span>o</span></div>
+
+    <button class="btn-google" type="button" aria-label="Ingresar con Google">
+      <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="" />
+      Ingresar con Google
+    </button>
+  </main>
+
+  <script type="module" src="js/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+:root{
+  --serversbar-w: 68px;
+  --sb-bg: #141516;        /* fondo barra */
+  --sb-item: #D4C3FF;      /* botón normal */
+  --sb-hover: #814fff;     /* morado activo/hover */
+  --sb-text: #1D1B20;
+}
+
+/* Barra fija a la izquierda */
+.serversbar{
+  position: fixed;
+  inset: 0 auto 0 0;       /* top/right/bottom/left */
+  width: var(--serversbar-w);
+  background: var(--sb-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  gap: 14px;
+  z-index: 300;
+}
+
+/* Logo arriba */
+.serversbar__logo{
+  display: grid;
+  place-items: center;
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.serversbar__logo img{
+  width: 100%; height: 100%; object-fit: cover;
+}
+
+/* Lista (scrollable si crece) */
+.serversbar__list{
+  display: flex; flex-direction: column; gap: 12px;
+  width: 100%;
+  align-items: center;
+  overflow-y: auto;
+  scrollbar-width: none;           /* ocultar scrollbar (Firefox) */
+}
+.serversbar__list::-webkit-scrollbar{ display:none; } /* Chrome */
+
+.serversbar__btn{
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: var(--sb-item);
+  color: var(--sb-text);
+  font-size: 20px;
+  display: grid; place-items: center;
+  cursor: pointer;
+  transition: transform .15s ease, background .15s ease, color .15s ease;
+  outline: none;
+}
+.serversbar__btn:hover{ background: var(--sb-hover); color: #fff; transform: translateY(-1px); }
+.serversbar__btn.is-active{ background: var(--sb-hover); color:#fff; }
+
+/* --- Ajustes del layout existente para dejar espacio a la barra --- */
+.chat-container{ margin-left: var(--serversbar-w); }
+.chat-header{ left: var(--serversbar-w); } /* tu header es fixed; así no se monta sobre la barra */

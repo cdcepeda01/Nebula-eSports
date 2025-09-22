@@ -1,0 +1,96 @@
+/* ===== Panel derecho: Miembros ===== */
+.user-sidebar{
+  position: fixed;
+  top: 0;                  /* 👈 antes era var(--header-h) */
+  right: -320px;           /* empieza oculto */
+  bottom: 0;
+  width: 300px;
+  background: #2b2d31;
+  border-left: 1px solid #3b3d44;
+  display: flex;
+  flex-direction: column;
+  z-index: 300;            /* más alto que el header */
+  transition: right 0.25s ease;
+}
+.user-sidebar.is-visible {
+  right: 0;               /* 👈 se muestra entrando desde la derecha */
+}
+/* Header del panel */
+.members__header{
+  height: 44px;
+  padding: 0 12px;
+  border-bottom: 1px solid #3b3d44;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #e6e7eb;
+}
+.members__title{ display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.members__header .icon-btn{ color: #e6e7eb; font-size: 18px; }
+
+/* Scroll del contenido */
+.members__scroll{
+  overflow: auto;
+  padding: 10px 10px 14px;
+}
+
+/* Grupo por rol */
+.role-group{ margin-bottom: 16px; }
+.role-group__title{
+  margin: 6px 4px 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: #b9bbbe;
+  display: flex; align-items: center; gap: 8px;
+}
+.role-group__title .count{
+  font-size: 11px; color: #9aa0a6; background: #383a40;
+  padding: 1px 6px; border-radius: 999px;
+}
+
+/* Lista de miembros */
+.member-list{ list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.member{
+  display: grid;
+  grid-template-columns: 36px 1fr 12px; /* avatar | meta | status dot */
+  align-items: center;
+  gap: 10px;
+  background: #313338;
+  border: 1px solid #3c3f45;
+  border-radius: 10px;
+  padding: 6px 8px;
+  transition: background .15s, border-color .15s;
+}
+.member:hover{ background: #3a3c42; border-color: #4a4d55; }
+
+/* Avatar con anillo de color (como la referencia) */
+.member__avatar{
+  width: 32px; height: 32px; border-radius: 50%; overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 0 3px var(--ring,#8b5cf6);    /* anillo de color */
+}
+.member__avatar img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Meta */
+.member__meta{ min-width: 0; }
+.member__name{
+  font-size: 13px; font-weight: 700; color: #e6e7eb;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.member__sub{ font-size: 11px; color: #b9bbbe; }
+
+/* Dot de estado */
+.member__status{
+  width: 10px; height: 10px; border-radius: 50%;
+  justify-self: end;
+}
+.member__status.online{  background:#23a55a; }
+.member__status.idle{    background:#f0b232; }
+.member__status.dnd{     background:#f23f43; }
+.member__status.offline{ background:#6a6d75; }
+
+/* Scrollbar tenue */
+.members__scroll::-webkit-scrollbar{ width: 10px; }
+.members__scroll::-webkit-scrollbar-thumb{ background:#3c3f45; border-radius: 10px; }
+.members__scroll{ scrollbar-color:#3c3f45 transparent; scrollbar-width: thin; }

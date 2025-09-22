@@ -1,0 +1,353 @@
+/* ====== Base ====== */
+*{ box-sizing: border-box; }
+body{
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #37393E;              /* fondo general oscuro */
+  color: #e6e7eb;
+  font-family: "Radio Canada", Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+/* Offsets de barras laterales (ajusta si cambian) */
+:root{
+  --serversbar-w: 72px;
+  --channelsbar-w: 300px;
+  --header-h: 56px;
+}
+
+/* ====== Contenedor principal ====== */
+.chat-container{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  margin-left: calc(var(--serversbar-w) + var(--channelsbar-w));
+  padding-top: var(--header-h);
+  background: #37393E;
+}
+
+/* ====== Header ====== */
+.chat-header{
+  position: fixed;
+  top: 0;
+  left: calc(var(--serversbar-w) + var(--channelsbar-w));
+  right: 0;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #37393E;
+  color: #e6e7eb;
+  border-bottom: 1px solid #3b3d44;
+  z-index: 200;
+}
+.chat-header h2{
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+.header-actions{ display: flex; gap: 10px; }
+.icon-btn{ background: none; border: 0; color: inherit; font-size: 18px; cursor: pointer; }
+.icon-btn:hover{ opacity: .85; }
+
+/* ====== Main (área de mensajes) ====== */
+.chat-main{
+  flex: 1;
+  overflow: auto;
+  padding: 20px 24px 16px;
+  background: transparent;
+}
+
+/* Carril de mensajes centrado */
+.messages{
+  display:flex;
+  flex-direction:column;
+  gap:22px;
+  max-width:980px;
+  margin:0 auto;
+}
+
+/* ====== Nueva estructura de mensaje (.msg) ======
+Markup esperado:
+<div class="msg -other">  <!-- o .-self -->
+  <div class="msg__avatar" style="--av:#ea5455"><i class="fa-regular fa-user"></i></div>
+  <div class="msg__body">
+    <div class="msg__meta"><span class="msg__name">MIEMBRO #4712</span></div>
+    <div class="msg__bubble">Texto…</div>
+  </div>
+</div>
+*/
+.msg{
+  display:grid;
+  grid-template-columns: 48px 1fr;  /* avatar | contenido */
+  grid-template-rows: auto auto;    /* label | burbuja */
+  column-gap:14px;
+}
+.msg__avatar{
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--av, #5865f2);
+  color: #121316;
+  display: grid; place-items: center;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 4px rgba(0,0,0,.2);
+}
+
+/* Alineación de tus propios mensajes */
+.msg.-self {
+  grid-template-columns: 1fr 44px;
+  align-items: center;       /* ✅ igual para tus mensajes */
+}
+.msg.-self .msg__avatar{ grid-column: 2; }
+.msg.-self .msg__body{ grid-column: 1; }
+.msg.-self .msg__meta{ text-align: right; }
+.msg.-self .msg__bubble{
+  background: #aeb0b6;     /* gris claro como en la ref */
+  color: #1b1c1f;
+  border-color: transparent;
+}
+.msg__wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.msg__bubble {
+  margin-top: 4px; /* separa un poco el nombre del texto */
+}
+
+/* “Thread” con codo */
+.msg.-reply{ position: relative; }
+.msg.-reply::before{
+  content:"";
+  position: absolute;
+  left: 22px;                 /* centro del avatar */
+  top: -8px;
+  width: 18px; height: calc(100% + 8px);
+  border-left: 2px solid #9aa0a6;
+  border-bottom: 2px solid #9aa0a6;
+  border-bottom-left-radius: 8px;
+  opacity: .7;
+}
+
+/* Mensaje de sistema */
+.msg.-system{
+  text-align: center;
+  color: #8b5cf6;
+  background: transparent;
+  border: 0;
+  padding: 6px 0;
+}
+
+/* ====== Compat: si aún usas .message vieja, que se vea bien ====== */
+.message{
+  max-width: 760px;
+  border-radius: 12px;
+  padding: 12px 14px;
+  line-height: 1.35;
+  background: #2b2d31;
+  color: #e6e7eb;
+  border: 1px solid #3c3f45;
+  align-self: flex-start;
+}
+.message.self{
+  align-self: flex-end;
+  background: #aeb0b6;
+  color: #1b1c1f;
+  border-color: transparent;
+}
+.msg.-system {
+  display: block;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8b5cf6;    /* morado */
+  margin: 10px 0;
+  opacity: 0.9;
+}
+.msg.-system::before {
+  content: "⚙️ ";
+}
+/* ====== Input inferior ====== */
+.chat-input{
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  display: grid;
+  grid-template-columns: 1fr 46px;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #37393E;
+  border-top: 1px solid #22242a;
+}
+.chat-input input{
+  background: #6f6f80;           /* pista gris-morada */
+  border: 0;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  color: #f6f6f8;
+  outline: none;
+}
+.chat-input input::placeholder{ color: #d1cbe7; opacity: .85; }
+.send-btn{
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(90deg, #8b5cf6, #b085ff);
+  color: #fff;
+  font-size: 18px;
+  display: grid; place-items: center;
+  cursor: pointer;
+}
+.send-btn:hover{ filter: brightness(1.05); }
+/* Contenedor inferior */
+.chat-input{
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  padding: 12px 16px;
+  background: #37393E; /* mismo fondo que el chat */
+  border-top: 1px solid #3b3d44;
+}
+
+/* Caja completa con input + iconos */
+.chat-input__inner{
+  display: flex;
+  align-items: center;
+  background: #605B6C;      /* gris-morado */
+  border-radius: 12px;
+  padding: 0 10px;
+  height: 42px;
+}
+
+/* Botón emoji */
+.emoji-btn{
+  background: none;
+  border: 0;
+  color: #d1cbe7;
+  font-size: 18px;
+  cursor: pointer;
+  margin-right: 8px;
+}
+.emoji-btn:hover{ opacity: 0.8; }
+
+/* Input */
+.chat-input__inner input{
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: #d1cbe7;
+  font-size: 14px;
+}
+.chat-input__inner input::placeholder{
+  color: #d1cbe7;
+  opacity: .9;
+}
+
+/* Botón enviar */
+.send-btn{
+  background: none;
+  border: 0;
+  color: #d1cbe7;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: 8px;
+}
+.send-btn:hover{ color: #fff; }
+.emoji-picker-wrapper{
+  position: absolute;
+  bottom: 60px;   /* encima de la barra */
+  left: 20px;
+  display: none;   /* oculto al inicio */
+  z-index: 1000;
+}
+/* ===== Mensajes ===== */
+/* ===== Carril ===== */
+.messages{
+  display:flex;
+  flex-direction:column;
+  gap:22px;
+  max-width:980px;
+  width:100%;
+  margin:0 auto;
+  align-items:stretch;
+}
+
+/* ===== Mensaje base (2 filas: label arriba, burbuja abajo) ===== */
+.msg{
+  width:100%;
+  display:grid;
+  grid-template-columns: 48px minmax(0,1fr); /* avatar | contenido (evita colapsos) */
+  grid-template-rows: auto auto;             /* label | burbuja */
+  column-gap:14px;
+}
+
+/* Avatar siempre centrado en la fila de la burbuja */
+.msg__avatar{
+  grid-row:2;
+  align-self:center;
+  width:48px;height:48px;border-radius:50%;
+  display:grid;place-items:center;
+  background:var(--av,#8b5cf6);
+  color:#111;font-weight:800;
+  box-shadow: inset 0 0 0 4px rgba(0,0,0,.25);
+}
+
+/* Nombre arriba (fuera de la burbuja) */
+.msg__label{
+  grid-row:1;
+  font-size:12px;font-weight:700;letter-spacing:.2px;
+  color:#b495ff;
+  margin:2px 4px 6px;
+}
+
+/* Burbuja ocupa todo el carril disponible */
+.msg__bubble{
+  grid-row:2;
+  max-width:100%;
+  border-radius:14px;
+  padding:14px 18px;
+  line-height:1.4;
+  background:#2f3136;
+  color:#e7e8ea;
+  border:1px solid #3d4047;
+  overflow-wrap:anywhere;
+}
+
+/* ===== Lado IZQUIERDO (otros) ===== */
+.msg.-other .msg__avatar{ grid-column:1; }
+.msg.-other .msg__label { grid-column:2; text-align:left; margin-left:6px; }
+.msg.-other .msg__bubble{ grid-column:2; }
+
+/* ===== Lado DERECHO (yo) ===== */
+.msg.-self{
+  grid-template-columns: minmax(0,1fr) 48px; /* contenido | avatar */
+}
+.msg.-self .msg__avatar{ grid-column:2; }
+.msg.-self .msg__label { grid-column:1; text-align:right; margin-right:6px; }
+.msg.-self .msg__bubble{
+  grid-column:1;
+  background:#b1b3ba; color:#1b1c1f; border-color:transparent;
+}
+
+/* ===== Mensaje de sistema (sin avatar ni burbuja) ===== */
+.msg.-system{
+  display:block;
+  text-align:center;
+  font-size:13px;font-weight:600;
+  color:#8b5cf6;
+  margin:10px 0;
+}
+.msg.-system::before{ content:"⚙️ "; }
+
+/* ====== Scrollbar opcional tenue ====== */
+.chat-main::-webkit-scrollbar{ width: 10px; }
+.chat-main::-webkit-scrollbar-thumb{ background:#3c3f45; border-radius: 10px; }
+.chat-main{ scrollbar-color: #3c3f45 transparent; scrollbar-width: thin; }
