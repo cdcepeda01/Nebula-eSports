@@ -88,7 +88,7 @@
 .member__status.online{  background:#23a55a; }
 .member__status.idle{    background:#f0b232; }
 .member__status.dnd{     background:#f23f43; }
-.member__status.offline{ background:#6a6d75; }
+.member__status.offline{ background:#f23f43; }
 
 /* Scrollbar tenue */
 .members__scroll::-webkit-scrollbar{ width: 10px; }

@@ -160,6 +160,22 @@
   display:grid; place-items:center; cursor:pointer; transition:.15s;
 }
 .usercard__btn:hover{ color:#fff; border-color:#50535b; }
+.role-badge{
+  display:inline-block;
+  padding:2px 8px;
+  margin-right:6px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:600;
+  background:#2f3136;
+  color:#cfd2d8;
+  border:1px solid #3c3f45;
+}
+
+/* estado en el puntico */
+.usercard .status{ width:10px; height:10px; border-radius:50%; position:absolute; bottom:0; right:0; }
+.usercard .status.online{  background:#23a55a; }
+.usercard .status.offline{ background:#6a6d75; }
 
 /* --- empujar el chat a la derecha de ambas barras --- */
 .chat-container{ margin-left: calc(var(--serversbar-w) + var(--channelsbar-w)); }

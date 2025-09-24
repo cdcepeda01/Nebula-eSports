@@ -95,6 +95,18 @@ export function clearUser() {
 export function redirectToLogin() {
   window.location.href = "/login.html";
 }
+export function updateMembersPresence(serverUsers = []) {
+  const byId = new Map(serverUsers.map(u => [String(u.id), !!u.connected]));
+  document.querySelectorAll('.member[data-user-id]').forEach(li => {
+    const id  = li.dataset.userId;
+    const dot = li.querySelector('.member__status');
+    if (!dot) return;
+    const isOnline = byId.get(id);
+
+    dot.classList.remove('online','idle','dnd','offline');
+    dot.classList.add(isOnline ? 'online' : 'offline');
+  });
+}
 
 
 

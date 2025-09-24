@@ -27,7 +27,7 @@ function setupChat(wss) {
                         name: u.name,
                         rol: u.rol,
                         img: u.img,
-                        connected: users.some(c => c.id === u.id)
+                        connected: users.some(c => String(c.id) === String(u.id))
                     }))
                 });
             }
@@ -52,7 +52,7 @@ function setupChat(wss) {
                         name: u.name,
                         rol: u.rol,
                         img: u.img,
-                        connected: users.some(c => c.id === u.id)
+                        connected: users.some(c => String(c.id) === String(u.id))
                     }))
                 });
             }

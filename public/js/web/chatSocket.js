@@ -1,5 +1,4 @@
-import { addMessage, addSystemMessage, updateUserList } from "../ui/chatUI.js";
-
+import { addMessage, addSystemMessage, updateUserList, updateMembersPresence } from "../ui/chatUI.js";
 let socket;
 
 // elimina etiquetas tipo [general] al inicio del texto
@@ -31,7 +30,8 @@ export function connect(user) {
         addSystemMessage(data.text || "");
         break;
       case "users":
-        updateUserList?.(data.users || []);
+        updateUserList?.(data.users || []);        
+        updateMembersPresence?.(data.users || []);
         break;
     }
   });

@@ -4,6 +4,43 @@ import { clearUser, redirectToLogin } from "./ui/chatUI.js"; // showUserList ya 
 // ==================== Verificar usuario ====================
 const user = JSON.parse(localStorage.getItem("user"));
 if (!user) redirectToLogin();
+// ====== Footer dinámico ======
+function renderFooterUser(u){
+  const nameEl   = document.getElementById("footerName");
+  const roleEl   = document.getElementById("footerRole");
+  const tagEl    = document.getElementById("footerTag");
+  const onlineEl = document.getElementById("footerOnline");
+  const avatarEl = document.getElementById("footerAvatar");
+  const statusEl = document.getElementById("footerStatus");
+
+  if (!nameEl || !roleEl || !tagEl || !onlineEl || !avatarEl || !statusEl) return;
+
+  // Nombre
+  nameEl.textContent = u.name || "Usuario";
+
+  // Rol (admin/user) en mayúsculas
+  const rol = (u.rol || u.role || "user").toUpperCase();
+  roleEl.textContent = rol;
+
+  // Tag/ID con relleno (ej. #0007)
+  const tag = `#${String(u.id ?? "").toString().padStart(4,"0")}`;
+  tagEl.textContent = tag;
+
+  // Estado (tú mismo = online mientras la WS esté abierta)
+  onlineEl.textContent = "· En línea";
+
+  // Avatar (usa el del JSON o un fallback)
+  avatarEl.src = u.img || u.avatar || "https://api.dicebear.com/7.x/initials/svg?seed=" + encodeURIComponent(u.name || "User");
+  avatarEl.alt = u.name || "Usuario";
+
+  // Puntico de estado
+  statusEl.classList.remove("offline");
+  statusEl.classList.add("online");
+}
+
+// Llama aquí, después de leer user y antes/justo después de connect(user):
+if (!user) redirectToLogin();
+renderFooterUser(user);
 
 // Header con el nombre
 const titleHeader = document.getElementById("chat-username");
@@ -191,7 +228,7 @@ function normalize(u) {
     tag: u.tag || u.discriminator || "",
     role: (u.rol || u.role || "jugador").toLowerCase(),
     avatar: u.img || u.avatar || "",
-    status: (u.status || "online").toLowerCase(),
+    status: (u.status || "offline").toLowerCase(),
   };
 }
 
@@ -234,6 +271,7 @@ function renderMembers(groups) {
     list.forEach((u) => {
       const li = document.createElement("li");
       li.className = "member";
+      li.dataset.userId = String(u.id);
       const ring = colorFromString(u.id?.toString() || u.name);
 
       li.innerHTML = `

@@ -105,19 +105,26 @@
     </div>
 
     <!-- Footer de usuario -->
-    <div class="usercard">
-        <div class="usercard__avatar">
-        <img src="https://i.pravatar.cc/100?img=12" alt="">
-        <span class="status online"></span>
-        </div>
-        <div class="usercard__meta">
-        <div class="usercard__name">USER0001</div>
-        <div class="usercard__id">#0001 · En línea</div>
-        </div>
-        <button class="usercard__btn" title="Ajustes">
-        <i class="fa-solid fa-gear"></i>
-        </button>
+    <div class="usercard" id="footerUser">
+    <div class="usercard__avatar">
+        <img id="footerAvatar" src="" alt="">
+        <span class="status" id="footerStatus"></span>
     </div>
+
+    <div class="usercard__meta">
+        <div class="usercard__name" id="footerName">—</div>
+        <div class="usercard__id">
+        <span id="footerRole" class="role-badge">—</span>
+        <span id="footerTag">—</span>
+        <span id="footerOnline">· —</span>
+        </div>
+    </div>
+
+    <button class="usercard__btn" title="Ajustes">
+        <i class="fa-solid fa-gear"></i>
+    </button>
+    </div>
+
     </aside>
     <div class="chat-container">
         <header class="chat-header">
