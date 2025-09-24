@@ -182,7 +182,7 @@ emojiPicker?.addEventListener("emoji-click", (e) => {
 });
 
 // ==================== Panel miembros (desde users.json servido por Express) ====================
-const MEMBERS_URL = "/data/users.json"; // << usa la ruta del servidor (opción B)
+const MEMBERS_URL = "/api/users"; // << usa la ruta del servidor (opción B)
 
 function normalize(u) {
   return {
