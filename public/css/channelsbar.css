@@ -15,17 +15,13 @@
 
 .channelsbar{
   position: fixed;
-  top: 0;
-  left: var(--serversbar-w);
-  bottom: 0;
+  top:0; left: var(--serversbar-w); bottom:0;
   width: var(--channelsbar-w);
-  background: var(--layer-bg);
-  display: grid;
-  grid-template-rows: auto auto 1fr auto; /* top, server-card, scroll, usercard */
-  gap: 12px;
-  padding: 12px;
-  box-sizing: border-box;
-  z-index: 250;
+  background: var(--side-bg);
+  border-right: 1px solid var(--side-border);
+  color: var(--text);
+  display:grid; grid-template-rows: auto auto 1fr auto;
+  gap:12px; padding:12px; z-index:250;
 }
 
 /* --- fila superior --- */
@@ -35,20 +31,18 @@
   gap: 10px;
 }
 .channelsbar__search{
-  display: grid; grid-template-columns: 20px 1fr; align-items: center;
-  gap: 8px; background: var(--panel-bg-2); border: 1px solid var(--border);
-  border-radius: 10px; padding: 8px 10px; color: var(--text-2);
+  display:grid; grid-template-columns:20px 1fr; align-items:center; gap:8px;
+  background: var(--side-card); border:1px solid var(--side-border);
+  border-radius:10px; padding:8px 10px; color: var(--text-muted);
 }
-.channelsbar__search input{
-  background: transparent; border: none; outline: none; color: var(--text-1);
-  font-size: 14px;
-}
+.channelsbar__search input{ background:transparent; border:0; outline:0; color: var(--text); }
+
 .channelsbar__icon{
-  width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border);
-  background: var(--panel-bg-2); color: var(--text-2); display: grid; place-items: center;
-  cursor: pointer; transition: .15s;
+  width:40px; height:40px; border-radius:10px;
+  background: var(--side-card); color: var(--text-muted);
+  border:1px solid var(--side-border); display:grid; place-items:center; cursor:pointer;
 }
-.channelsbar__icon:hover{ color: #fff; border-color: #50535b; }
+.channelsbar__icon:hover{ color:var(--text); border-color: color-mix(in srgb, var(--side-border) 40%,var(--text)); }
 
 /* --- tarjeta del servidor --- */
 .server-card{
@@ -90,12 +84,12 @@
   font-weight: 600;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: var(--text-2);
+  color: var(--text-muted);
   padding: 4px 6px;
   transition: color .2s;
 }
 .cat__header:hover {
-  color: var(--text-1);
+  color: var(--text);
 }
 .cat__header::-webkit-details-marker { display: none; }
 .cat[open] .cat__header i { transform: rotate(180deg); }
@@ -118,31 +112,29 @@
   object-fit: cover; display: block;
 }
 .chan {
-  height: 32px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: none;
-  background: var(--text-3);
-  color: var(--text-2);
-  border-radius: 6px;
-  padding: 0 8px;
-  font-size: 14px;
-
-  font-weight: 600;   /* 👈 Bold para todos los canales */
-
-  cursor: pointer;
-  transition: background .15s, color .15s;
+  height:32px; display:flex; align-items:center; gap:8px;
+  background: var(--side-card);
+  color: var(--text-muted);
+  border:1px solid var(--side-border);
+  border-radius:6px; padding:0 8px; font-size:14px; font-weight:600; cursor:pointer;
+  transition: .15s;
 }
+.chan.is-hidden { display:none; }
+.chan__hl { background:transparent; color:var(--accent); font-weight:700; }
+
 .chan i{ color: var(--text-2); }
-.chan:hover{ border-color:#50535b; background:#34363b; }
-.chan.is-active{ outline: 2px solid var(--accent); }
+.chan:hover{ background: var(--side-hover); color: var(--text); }
+.chan.is-active{
+  outline:2px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
 
 /* --- footer de usuario --- */
 .usercard{
-  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px;
-  background: var(--panel-bg); border:1px solid var(--border);
-  border-radius: var(--radius); padding: 10px 12px; color: var(--text-1);
+  display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px;
+  background: var(--side-card);
+  border:1px solid var(--side-border);
+  border-radius: var(--radius); padding:10px 12px; color: var(--text);
 }
 .usercard__avatar{ position: relative; width: 36px; height: 36px; }
 .usercard__avatar img{ width: 100%; height: 100%; border-radius: 50%; display:block; object-fit:cover; }
@@ -153,13 +145,13 @@
 .online{ background:#23a55a; }
 .usercard__meta{ display:flex; flex-direction:column; line-height:1.1; }
 .usercard__name{ font-size: 13px; font-weight: 600; }
-.usercard__id{ font-size: 11px; color: var(--text-2); }
+.usercard__id{ font-size: 11px; color: var(--text-muted); }
 .usercard__btn{
-  width: 36px; height: 36px; border-radius: 10px; border:1px solid var(--border);
-  background: var(--panel-bg-2); color: var(--text-2);
+  width: 36px; height: 36px; border-radius: 10px; border:1px solid var(--side-border);
+  background: var(--side-bg); color: var(--text);
   display:grid; place-items:center; cursor:pointer; transition:.15s;
 }
-.usercard__btn:hover{ color:#fff; border-color:#50535b; }
+.usercard__btn:hover{ color:var(--text);; border-color:var(--text); }
 .role-badge{
   display:inline-block;
   padding:2px 8px;
@@ -233,3 +225,47 @@
   .server-banner{ height: 140px; }
   .server-banner__title{ font-size: 22px; }
 }
+/* ===== Popover ajustes usuario (footer) ===== */
+.usercard{ position: relative; }
+.usercard__btn{ position: relative; z-index: 2; }
+
+.usercard__menu{
+  position: absolute;
+  right: 10px;
+  bottom: 60px;
+  min-width: 220px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  padding: 10px;
+}
+.usercard__menu[hidden]{ display:none; }
+
+.usercard__menu .menu-row{
+  display:flex; align-items:center; justify-content:space-between;
+  gap: 10px; padding: 6px 2px;
+}
+.usercard__menu hr{
+  border:0; border-top:1px solid var(--border); margin:8px 0;
+}
+.usercard__menu .menu-item{
+  width:100%; display:flex; align-items:center; gap:8px;
+  background:none; border:0; color:inherit; cursor:pointer;
+  padding:8px; border-radius:8px;
+}
+.usercard__menu .menu-item:hover{ background: rgba(255,255,255,.06); }
+
+/* Switch */
+.switch{ position:relative; display:inline-flex; align-items:center; gap:8px; }
+.switch input{ display:none; }
+.slider{
+  width:42px; height:22px; border-radius:22px; background:#777; display:inline-block; position:relative;
+}
+.slider::after{
+  content:""; position:absolute; width:18px; height:18px; border-radius:50%; background:#fff; top:2px; left:2px; transition:transform .2s;
+}
+.switch input:checked + .slider{ background:#8b5cf6; }
+.switch input:checked + .slider::after{ transform: translateX(20px); }
+.switch-label{ font-size:12px; opacity:.8; }

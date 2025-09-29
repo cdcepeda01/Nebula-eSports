@@ -5,8 +5,8 @@
   right: -320px;           /* empieza oculto */
   bottom: 0;
   width: 300px;
-  background: #2b2d31;
-  border-left: 1px solid #3b3d44;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   z-index: 300;            /* más alto que el header */
@@ -19,14 +19,14 @@
 .members__header{
   height: 44px;
   padding: 0 12px;
-  border-bottom: 1px solid #3b3d44;
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #e6e7eb;
+  color: var(--text);
 }
 .members__title{ display: flex; align-items: center; gap: 8px; font-weight: 700; }
-.members__header .icon-btn{ color: #e6e7eb; font-size: 18px; }
+.members__header .icon-btn{ color: var(--text); font-size: 18px; }
 
 /* Scroll del contenido */
 .members__scroll{
@@ -41,11 +41,12 @@
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: .4px;
-  color: #b9bbbe;
+  color: var(--bubble-self);
   display: flex; align-items: center; gap: 8px;
 }
 .role-group__title .count{
-  font-size: 11px; color: #9aa0a6; background: #383a40;
+  font-size: 11px; color: var(--bubble-self); background: var(--side-active);
+;
   padding: 1px 6px; border-radius: 999px;
 }
 
@@ -56,13 +57,13 @@
   grid-template-columns: 36px 1fr 12px; /* avatar | meta | status dot */
   align-items: center;
   gap: 10px;
-  background: #313338;
-  border: 1px solid #3c3f45;
+  background: var(--member-card);
+  border: 1px solid var(--border-card);
   border-radius: 10px;
   padding: 6px 8px;
   transition: background .15s, border-color .15s;
 }
-.member:hover{ background: #3a3c42; border-color: #4a4d55; }
+.member:hover{ background:var(--member-card-hover); border-color:var(--border-card-hover); }
 
 /* Avatar con anillo de color (como la referencia) */
 .member__avatar{
@@ -75,7 +76,7 @@
 /* Meta */
 .member__meta{ min-width: 0; }
 .member__name{
-  font-size: 13px; font-weight: 700; color: #e6e7eb;
+  font-size: 13px; font-weight: 700; color: var( --text-muted);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .member__sub{ font-size: 11px; color: #b9bbbe; }

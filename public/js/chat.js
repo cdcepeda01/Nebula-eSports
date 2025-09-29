@@ -1,9 +1,10 @@
-import { connect, sendMessage } from "./web/chatSocket.js";
-import { clearUser, redirectToLogin } from "./ui/chatUI.js"; // showUserList ya no se usa
+import { connect, sendMessage, setChannel } from "./web/chatSocket.js";
+import { clearUser, redirectToLogin } from "./ui/chatUI.js";
 
 // ==================== Verificar usuario ====================
 const user = JSON.parse(localStorage.getItem("user"));
 if (!user) redirectToLogin();
+
 // ====== Footer dinámico ======
 function renderFooterUser(u){
   const nameEl   = document.getElementById("footerName");
@@ -12,37 +13,20 @@ function renderFooterUser(u){
   const onlineEl = document.getElementById("footerOnline");
   const avatarEl = document.getElementById("footerAvatar");
   const statusEl = document.getElementById("footerStatus");
-
   if (!nameEl || !roleEl || !tagEl || !onlineEl || !avatarEl || !statusEl) return;
 
-  // Nombre
   nameEl.textContent = u.name || "Usuario";
-
-  // Rol (admin/user) en mayúsculas
-  const rol = (u.rol || u.role || "user").toUpperCase();
-  roleEl.textContent = rol;
-
-  // Tag/ID con relleno (ej. #0007)
-  const tag = `#${String(u.id ?? "").toString().padStart(4,"0")}`;
-  tagEl.textContent = tag;
-
-  // Estado (tú mismo = online mientras la WS esté abierta)
+  roleEl.textContent = (u.rol || u.role || "user").toUpperCase();
+  tagEl.textContent  = `#${String(u.id ?? "").toString().padStart(4,"0")}`;
   onlineEl.textContent = "· En línea";
-
-  // Avatar (usa el del JSON o un fallback)
   avatarEl.src = u.img || u.avatar || "https://api.dicebear.com/7.x/initials/svg?seed=" + encodeURIComponent(u.name || "User");
   avatarEl.alt = u.name || "Usuario";
-
-  // Puntico de estado
   statusEl.classList.remove("offline");
   statusEl.classList.add("online");
 }
-
-// Llama aquí, después de leer user y antes/justo después de connect(user):
-if (!user) redirectToLogin();
 renderFooterUser(user);
 
-// Header con el nombre
+// Header
 const titleHeader = document.getElementById("chat-username");
 if (titleHeader) titleHeader.textContent = "Bienvenido " + user.name;
 
@@ -57,6 +41,8 @@ const channelsbar  = document.querySelector(".channelsbar");
 const titleEl      = document.getElementById("chat-username");
 const inputEl      = document.getElementById("messageInput");
 const messagesEl   = document.getElementById("messages");
+const notifBtn     = document.getElementById("notifBtn"); // campanita (asegúrate de tener id en el HTML)
+const searchInput  = document.querySelector('.channelsbar__search input'); // 🔎
 
 // ==================== Conectar WebSocket ====================
 connect(user);
@@ -67,41 +53,15 @@ logoutBtn?.addEventListener("click", () => {
   redirectToLogin();
 });
 
-// === Sidebar Miembros: una sola forma de abrir/cerrar ===
+// === Sidebar Miembros ===
 toggleBtn?.addEventListener("click", () => {
   sidebar?.classList.toggle("is-visible");
 });
 closeBtn?.addEventListener("click", () => {
   sidebar?.classList.remove("is-visible");
 });
-// ——— Helpers para limpiar lo que viene del server ———
-function stripChannelTag(t = "") {
-  // quita "[algo]" al principio + espacio
-  return String(t).replace(/^\[[^\]]+\]\s*/, "");
-}
 
-function parseIncoming(raw) {
-  // Si ya viene como objeto { authorName, text } o { from, message }
-  if (raw && typeof raw === "object") {
-    const author = raw.authorName || raw.from || "Sistema";
-    const text   = stripChannelTag(raw.text || raw.message || "");
-    return { authorName: author, text };
-  }
-
-  // Si viene como string "Nombre: [canal] mensaje"
-  const s   = String(raw ?? "");
-  const idx = s.indexOf(":");
-  let authorName = "Sistema";
-  let text = s;
-
-  if (idx > -1 && idx < 40) {        // "Nombre:" razonable
-    authorName = s.slice(0, idx).trim();
-    text       = s.slice(idx + 1).trim();
-  }
-  return { authorName, text: stripChannelTag(text) };
-}
-
-// ==================== Render de mensajes (.msg) ====================
+// ==================== Render de mensajes de sistema (para demos de canal) ====================
 function renderMsg({ authorName, text, isSelf=false, color='#8b5cf6', isReply=false }) {
   if (!messagesEl) return;
 
@@ -121,7 +81,6 @@ function renderMsg({ authorName, text, isSelf=false, color='#8b5cf6', isReply=fa
   bubble.className = 'msg__bubble';
   bubble.textContent = text;
 
-  // 👇 Importa el orden: avatar (col1/2), label (col2/1), bubble (col2/2)
   msg.appendChild(avatar);
   msg.appendChild(label);
   msg.appendChild(bubble);
@@ -133,76 +92,109 @@ function renderMsg({ authorName, text, isSelf=false, color='#8b5cf6', isReply=fa
 // ==================== Canales ====================
 let currentChannel = null;
 
+const ANNOUNCEMENTS = [
+  "🏆 ¡Copa Nebula – Inscripciones abiertas hasta el viernes!",
+  "🕒 Mañana 20:00 – Clasificatorio Valorant (BO3).",
+  "🎁 Giveaway: skins para los 3 mejores del mes.",
+  "📢 Nuevo formato LoL: partidas al mejor de 1 en fase de grupos.",
+  "👥 Busca equipo: canal #reclutamiento para armar roster.",
+  "📺 Finales streameadas este domingo en Twitch /NebulaESports",
+  "🛠️ Mantenimiento del servidor el sábado 02:00–03:00 UTC.",
+  "📝 Reglas actualizadas: comportamiento y fair play. Revísalas.",
+  "🧭 Bracket publicado: ver #torneos → Brackets.",
+  "💬 Charla con pro invitado el jueves 19:00."
+];
+
 const CHANNEL_MESSAGES = {
   general: ["Bienvenido a #General", "Recuerda las reglas ✨"],
-  gaming: ["Hablemos de juegos hoy", "¿Qué estás jugando hoy? 🕹️"],
-  ideas: ["Deja tus sugerencias aquí", "💡 Idea #1: ..."],
+  gaming:  ["Hablemos de juegos hoy", "¿Qué estás jugando hoy? 🕹️"],
+  ideas:   ["Deja tus sugerencias aquí", "💡 Idea #1: ..."],
   leagueoflegends: ["Bienvenido a #LeagueOfLegends", "¿Quién se apunta a un Lolsito? 🎮"],
   valorant: ["Bienvenido a #Valorant", "¿Quién juega hoy Valorant? 🔥"],
   fortnite: ["Bienvenido a #Fortnite", "¿Listos para unas partidas? 🏆"],
-  ayuda: ["¿Necesitas ayuda?", "❓ Deja tus preguntas aquí"],
+  ayuda:   ["¿Necesitas ayuda?", "❓ Deja tus preguntas aquí"],
 };
 
-function setActiveChannel(id, name) {
-  currentChannel = { id, name };
-
-  // 1) activar visualmente el botón
-  document.querySelectorAll(".chan.is-active").forEach((b) => b.classList.remove("is-active"));
-  const btn = document.querySelector(`.chan[data-channel-id="${id}"]`);
-  if (btn) btn.classList.add("is-active");
-
-  // 2) actualizar header e input
-  if (titleEl) titleEl.textContent = name;
-  if (inputEl) inputEl.placeholder = `Enviar mensaje a ${name}`;
-
-  // 3) mostrar mensajes de demo (limpia primero)
-  if (messagesEl) {
-    messagesEl.innerHTML = "";
-    const msgs = CHANNEL_MESSAGES[id] || [`Bienvenido a #${name}`];
-    msgs.forEach((text) => {
-      renderMsg({
-        authorName: "Sistema",
-        text,
-        isSelf: false,
-        color: "#5865f2",
-      });
-    });
+// util para aleatorizar
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
   }
+  return a;
 }
 
-// Delegación: clic en cualquier .chan
+function setActiveChannel(id, name) {
+  const readonly = (id === "anuncios");
+  currentChannel = { id, name, readonly };
+
+  // activar botón
+  document.querySelectorAll(".chan.is-active").forEach((b) => b.classList.remove("is-active"));
+  document.querySelector(`.chan[data-channel-id="${id}"]`)?.classList.add("is-active");
+
+  // header & placeholder
+  if (titleEl) titleEl.textContent = name;
+  if (inputEl) inputEl.placeholder = readonly ? "Canal de anuncios (solo lectura)" : `Enviar mensaje a ${name}`;
+  chatForm?.classList.toggle("is-readonly", readonly);
+
+  // render inicial
+  if (!messagesEl) return;
+  messagesEl.innerHTML = "";
+
+  if (readonly) {
+    shuffle(ANNOUNCEMENTS).slice(0, 5).forEach((text) => {
+      renderMsg({ authorName: "Sistema", text, isSelf:false, color:"#5865f2" });
+    });
+  } else {
+    const msgs = CHANNEL_MESSAGES[id] || [`Bienvenido a #${name}`];
+    msgs.forEach((text) => {
+      renderMsg({ authorName: "Sistema", text, isSelf:false, color:"#5865f2" });
+    });
+  }
+
+  // avisar al servidor el canal actual
+  setChannel(id);
+}
+
+// cambiar canal por click
 channelsbar?.addEventListener("click", (e) => {
   const btn = e.target.closest(".chan");
   if (!btn) return;
-  const id = btn.dataset.channelId;
+  const id   = btn.dataset.channelId;
   const name = btn.dataset.channelName || btn.querySelector("span")?.textContent?.trim() || "Canal";
   if (!id) return;
   setActiveChannel(id, name);
 });
 
-// Inicializar con el canal activo al cargar
+// campanita → Anuncios
+notifBtn?.addEventListener("click", () => {
+  setActiveChannel("anuncios", "Anuncios");
+});
+
+// canal inicial
 (function initActiveChannel() {
   const first = document.querySelector(".chan.is-active") || document.querySelector(".chan");
   if (!first) return;
-  const id = first.dataset.channelId || "general";
+  const id   = first.dataset.channelId || "general";
   const name = first.dataset.channelName || first.querySelector("span")?.textContent?.trim() || "General";
   setActiveChannel(id, name);
 })();
 
 // ==================== Envío de mensajes ====================
-// Importante: NO renderizamos aquí para evitar doble burbuja.
-// Dejamos que el servidor haga broadcast y lo pintamos en el handler de socket.
 chatForm?.addEventListener("submit", (e) => {
   e.preventDefault();
+  if (!currentChannel || currentChannel.readonly) return;
+
   const text = messageInput?.value.trim();
   if (!text) return;
 
-  const tag = currentChannel ? `[${currentChannel.id}] ` : "";
-  sendMessage(user.name, tag + text); // solo enviamos
+  // 👇 importante: enviar el objeto user completo
+  sendMessage(user, text, currentChannel.id);
   if (messageInput) messageInput.value = "";
 });
 
-// ==================== Emoji picker (con guards) ====================
+// ==================== Emoji picker ====================
 const emojiBtn = document.querySelector(".emoji-btn");
 const emojiPicker = document.getElementById("emojiPicker");
 
@@ -210,16 +202,16 @@ emojiBtn?.addEventListener("click", () => {
   if (!emojiPicker) return;
   const wrap = emojiPicker.parentElement;
   if (!wrap) return;
-  wrap.style.display = wrap.style.display === "none" ? "block" : "none";
+  const hidden = getComputedStyle(wrap).display === "none";
+  wrap.style.display = hidden ? "block" : "none";
 });
-
 emojiPicker?.addEventListener("emoji-click", (e) => {
   if (!messageInput) return;
   messageInput.value += e.detail.unicode;
 });
 
-// ==================== Panel miembros (desde users.json servido por Express) ====================
-const MEMBERS_URL = "/api/users"; // << usa la ruta del servidor (opción B)
+// ==================== Panel miembros (desde /api/users) ====================
+const MEMBERS_URL = "/api/users";
 
 function normalize(u) {
   return {
@@ -231,32 +223,20 @@ function normalize(u) {
     status: (u.status || "offline").toLowerCase(),
   };
 }
-
-// color estable para el anillo del avatar
 function colorFromString(str = "user") {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  let h = 0; for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
   return `hsl(${h % 360} 70% 60%)`;
 }
-
 function renderMembers(groups) {
   const container = document.getElementById("membersScroll");
   if (!container) return;
   container.innerHTML = "";
-
-  const order = ["administrador", "admin", "moderador", "jugador", "user", "miembro"];
-  const labels = {
-    administrador: "Administradores",
-    admin: "Administradores",
-    moderador: "Moderadores",
-    jugador: "Jugadores",
-    user: "Usuarios",
-    miembro: "Miembros",
-  };
+  const order = ["administrador","admin","moderador","jugador","user","miembro"];
+  const labels = { administrador:"Administradores", admin:"Administradores", moderador:"Moderadores", jugador:"Jugadores", user:"Usuarios", miembro:"Miembros" };
 
   order.forEach((key) => {
     const list = groups[key];
-    if (!list || list.length === 0) return;
+    if (!list?.length) return;
 
     const section = document.createElement("section");
     section.className = "role-group";
@@ -264,8 +244,7 @@ function renderMembers(groups) {
       <h4 class="role-group__title">${labels[key] || key}
         <span class="count">${list.length}</span>
       </h4>
-      <ul class="member-list"></ul>
-    `;
+      <ul class="member-list"></ul>`;
     const ul = section.querySelector(".member-list");
 
     list.forEach((u) => {
@@ -273,30 +252,23 @@ function renderMembers(groups) {
       li.className = "member";
       li.dataset.userId = String(u.id);
       const ring = colorFromString(u.id?.toString() || u.name);
-
       li.innerHTML = `
         <span class="member__avatar" style="--ring:${ring}">
-          ${
-            u.avatar
+          ${ u.avatar
               ? `<img src="${u.avatar}" alt="">`
-              : `<img src="https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
-                  u.name
-                )}&backgroundType=gradientLinear" alt="">`
-          }
+              : `<img src="https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(u.name)}&backgroundType=gradientLinear" alt="">` }
         </span>
         <div class="member__meta">
           <div class="member__name">${u.name}</div>
           <div class="member__sub">${u.tag ? "#" + u.tag : ""}</div>
         </div>
-        <span class="member__status ${u.status}"></span>
-      `;
+        <span class="member__status ${u.status}"></span>`;
       ul.appendChild(li);
     });
 
     container.appendChild(section);
   });
 }
-
 async function loadMembers() {
   try {
     const res = await fetch(MEMBERS_URL, { cache: "no-store" });
@@ -305,19 +277,102 @@ async function loadMembers() {
 
     const list = raw.map(normalize);
     const groups = {};
-    list.forEach((u) => {
-      const key = u.role || "miembro";
-      (groups[key] ||= []).push(u);
-    });
-    Object.values(groups).forEach((g) => g.sort((a, b) => a.name.localeCompare(b.name)));
-
+    list.forEach((u) => { const key = u.role || "miembro"; (groups[key] ||= []).push(u); });
+    Object.values(groups).forEach((g) => g.sort((a,b) => a.name.localeCompare(b.name)));
     renderMembers(groups);
   } catch (err) {
     console.warn("users.json no disponible:", err);
     renderMembers({
       administrador: [{ id: 1, name: "Admin", tag: "0001", status: "online", avatar: "" }],
-      jugador: [{ id: 2, name: "Usuario", tag: "0002", status: "idle", avatar: "" }],
+      jugador:       [{ id: 2, name: "Usuario", tag: "0002", status: "idle",   avatar: "" }],
     });
   }
 }
 document.addEventListener("DOMContentLoaded", loadMembers);
+
+// ===== Theme Toggle via footer menu =====
+const userMenuBtn  = document.getElementById('userMenuBtn');
+const userMenu     = document.getElementById('userMenu');
+const themeToggle  = document.getElementById('themeToggle');
+const logoutQuick  = document.getElementById('logoutQuick');
+
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  if (themeToggle) themeToggle.checked = (theme === 'light');
+}
+const savedTheme = localStorage.getItem('theme')
+  || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+applyTheme(savedTheme);
+
+userMenuBtn?.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  if (!userMenu) return;
+  const hidden = userMenu.hasAttribute('hidden');
+  if (hidden) userMenu.removeAttribute('hidden');
+  else userMenu.setAttribute('hidden','');
+});
+document.addEventListener('click', (e)=>{
+  if (!userMenu) return;
+  const inside = userMenu.contains(e.target) || userMenuBtn.contains(e.target);
+  if (!inside) userMenu.setAttribute('hidden','');
+});
+themeToggle?.addEventListener('change', (e)=> applyTheme(e.target.checked ? 'light' : 'dark'));
+logoutQuick?.addEventListener('click', ()=>{
+  localStorage.removeItem('user');
+  window.location.href = '/login.html';
+});
+
+// ==================== Filtro de canales (Search) ====================
+function normalizeFold(str = "") {
+  return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+}
+function filterChannels(queryRaw) {
+  const q = normalizeFold(queryRaw.trim());
+  const chanButtons = Array.from(document.querySelectorAll('.chan'));
+
+  // limpiar resaltado previo
+  chanButtons.forEach(btn => {
+    const label = btn.querySelector('span');
+    if (!label) return;
+    if (!label.dataset.raw) label.dataset.raw = label.textContent;
+    label.innerHTML = label.dataset.raw;
+    btn.classList.remove('is-hidden');
+  });
+
+  if (!q) {
+    document.querySelectorAll('.cat').forEach(cat => { cat.style.display = ''; });
+    return;
+  }
+
+  chanButtons.forEach(btn => {
+    const label = btn.querySelector('span');
+    const text  = label?.dataset.raw || '';
+    const norm  = normalizeFold(text);
+
+    if (!norm.includes(q)) {
+      btn.classList.add('is-hidden');
+      return;
+    }
+    const idx = norm.indexOf(q);
+    const before = text.slice(0, idx);
+    const mid    = text.slice(idx, idx + q.length);
+    const after  = text.slice(idx + q.length);
+    label.innerHTML = `${before}<mark class="chan__hl">${mid}</mark>${after}`;
+  });
+
+  // ocultar categorías sin resultados y abrir las que sí tienen
+  document.querySelectorAll('.cat').forEach(cat => {
+    const hasVisible = cat.querySelector('.chan:not(.is-hidden)');
+    cat.style.display = hasVisible ? '' : 'none';
+    if (hasVisible) cat.setAttribute('open', '');
+  });
+}
+searchInput?.addEventListener('input', (e) => filterChannels(e.target.value));
+searchInput?.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    e.currentTarget.value = '';
+    filterChannels('');
+    e.currentTarget.blur();
+  }
+});

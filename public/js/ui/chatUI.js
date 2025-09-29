@@ -17,48 +17,61 @@ function colorFromString(str = "user") {
   return `hsl(${h % 360} 70% 60%)`;
 }
 
-// ===== mensajes =====
-export function addMessage(authorName, text, isSelf = false) {
+/**
+ * addMessage - pinta un mensaje .msg
+ * @param {Object} opts
+ *  - author: string (nombre a mostrar)
+ *  - text:   string (contenido)
+ *  - isSelf: boolean (alineación derecha/izquierda)
+ *  - avatar: string|null (url de imagen; si no hay, usa ícono)
+ */
+export function addMessage({ author = "Usuario", text = "", isSelf = false, avatar = null } = {}) {
   const messagesEl = document.getElementById("messages");
   if (!messagesEl) return;
 
   const msg = document.createElement("div");
   msg.className = `msg ${isSelf ? "-self" : "-other"}`;
 
-  const avatar = document.createElement("div");
-  avatar.className = "msg__avatar";
-  avatar.style.setProperty("--av", "hsl(260 70% 60%)"); // o tu helper de color
-  avatar.innerHTML = '<i class="fa-regular fa-user"></i>';
+  const avatarEl = document.createElement("div");
+  avatarEl.className = "msg__avatar";
+
+  if (avatar) {
+    avatarEl.classList.add("has-img");
+    avatarEl.innerHTML = `<img src="${avatar}" alt="${author}">`;
+  } else {
+    // fallback: color estable + icono
+    avatarEl.style.setProperty("--av", colorFromString(author));
+    avatarEl.innerHTML = '<i class="fa-regular fa-user"></i>';
+  }
 
   const label = document.createElement("div");
   label.className = "msg__label";
-  label.textContent = authorName;
+  label.textContent = author;
 
   const bubble = document.createElement("div");
   bubble.className = "msg__bubble";
   bubble.textContent = text;
 
   // Orden correcto para el grid 2x2
-  msg.appendChild(avatar);  // col1/fila2
-  msg.appendChild(label);   // col2/fila1
-  msg.appendChild(bubble);  // col2/fila2
+  msg.appendChild(avatarEl); // col1/fila2 (o col2 si -self por CSS)
+  msg.appendChild(label);    // col2/fila1 (o col1 si -self por CSS)
+  msg.appendChild(bubble);   // col2/fila2 (o col1 si -self por CSS)
 
   messagesEl.appendChild(msg);
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-
 export function addSystemMessage(text) {
-    const msgEl = document.createElement("div");
-    msgEl.classList.add("message", "system");
-    msgEl.innerHTML = `<em>⚙️ ${text}</em>`;
-    messagesDiv.appendChild(msgEl);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  const msgEl = document.createElement("div");
+  msgEl.classList.add("message", "system");
+  msgEl.innerHTML = `<em>⚙️ ${text}</em>`;
+  messagesDiv.appendChild(msgEl);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
 // ===== lista de usuarios (panel de miembros) =====
 export function updateUserList(users = []) {
-  if (!userList) return; // evita crash si aún no existe en el DOM
+  if (!userList) return;
   const arr = Array.isArray(users) ? users : [];
   userList.innerHTML = "";
 
@@ -87,7 +100,6 @@ export function showUserList(list, show) {
 
 // Sesión
 export function clearUser() {
-  // según tu app, se guarda como "user" (objeto); borramos ambos por si acaso
   localStorage.removeItem("user");
   localStorage.removeItem("username");
 }
@@ -95,6 +107,7 @@ export function clearUser() {
 export function redirectToLogin() {
   window.location.href = "/login.html";
 }
+
 export function updateMembersPresence(serverUsers = []) {
   const byId = new Map(serverUsers.map(u => [String(u.id), !!u.connected]));
   document.querySelectorAll('.member[data-user-id]').forEach(li => {
@@ -102,11 +115,7 @@ export function updateMembersPresence(serverUsers = []) {
     const dot = li.querySelector('.member__status');
     if (!dot) return;
     const isOnline = byId.get(id);
-
     dot.classList.remove('online','idle','dnd','offline');
     dot.classList.add(isOnline ? 'online' : 'offline');
   });
 }
-
-
-

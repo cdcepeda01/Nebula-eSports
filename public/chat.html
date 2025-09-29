@@ -37,7 +37,7 @@
         <i class="fa-solid fa-magnifying-glass"></i>
         <input type="text" placeholder="Search" />
         </div>
-        <button class="channelsbar__icon" title="Notificaciones">
+        <button id="notifBtn" class="channelsbar__icon" title="Notificaciones">
         <i class="fa-solid fa-bell"></i>
         </button>
     </div>
@@ -120,9 +120,23 @@
         </div>
     </div>
 
-    <button class="usercard__btn" title="Ajustes">
-        <i class="fa-solid fa-gear"></i>
+    <button class="usercard__btn" id="userMenuBtn" title="Ajustes">
+    <i class="fa-solid fa-gear"></i>
     </button>
+
+    <!-- Popover de ajustes -->
+    <div class="usercard__menu" id="userMenu" hidden>
+    <div class="menu-row">
+        <span>Tema</span>
+        <label class="switch">
+        <input type="checkbox" id="themeToggle" />
+        <span class="slider"></span>
+        <span class="switch-label">Claro</span>
+        </label>
+    </div>
+    <hr/>
+    <button class="menu-item" id="logoutQuick"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
+    </div>
     </div>
 
     </aside>
