@@ -1,19 +1,19 @@
 /* ===== Panel derecho: Miembros ===== */
 .user-sidebar{
   position: fixed;
-  top: 0;                  /* 👈 antes era var(--header-h) */
-  right: -320px;           /* empieza oculto */
+  top: 0;                  
+  right: -320px;           
   bottom: 0;
   width: 300px;
   background: var(--surface);
   border-left: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  z-index: 300;            /* más alto que el header */
+  z-index: 300;            
   transition: right 0.25s ease;
 }
 .user-sidebar.is-visible {
-  right: 0;               /* 👈 se muestra entrando desde la derecha */
+  right: 0;               
 }
 /* Header del panel */
 .members__header{

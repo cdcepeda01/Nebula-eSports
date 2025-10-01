@@ -31,18 +31,25 @@ const titleHeader = document.getElementById("chat-username");
 if (titleHeader) titleHeader.textContent = "Bienvenido " + user.name;
 
 // ==================== Referencias DOM ====================
-const chatForm     = document.getElementById("chatForm");
-const messageInput = document.getElementById("messageInput");
-const logoutBtn    = document.getElementById("logoutBtn");
-const sidebar      = document.getElementById("userSidebar");
-const toggleBtn    = document.getElementById("usersToggle");
-const closeBtn     = document.getElementById("closeSidebar");
-const channelsbar  = document.querySelector(".channelsbar");
-const titleEl      = document.getElementById("chat-username");
-const inputEl      = document.getElementById("messageInput");
-const messagesEl   = document.getElementById("messages");
-const notifBtn     = document.getElementById("notifBtn"); // campanita (asegúrate de tener id en el HTML)
-const searchInput  = document.querySelector('.channelsbar__search input'); // 🔎
+const chatForm       = document.getElementById("chatForm");
+const messageInput   = document.getElementById("messageInput");
+const logoutBtn      = document.getElementById("logoutBtn");
+const sidebar        = document.getElementById("userSidebar");
+const toggleBtn      = document.getElementById("usersToggle");
+const closeBtn       = document.getElementById("closeSidebar");
+const channelsbar    = document.querySelector(".channelsbar");
+const titleEl        = document.getElementById("chat-username");
+const inputEl        = document.getElementById("messageInput");
+const messagesEl     = document.getElementById("messages");
+const notifBtn       = document.getElementById("notifBtn");                 // campanita sidebar
+const searchInput    = document.querySelector('.channelsbar__search input'); // 🔎 sidebar
+const openChannelsBtn= document.getElementById("openChannels");              // botón ☰ header
+
+// === Dock móvil ===
+const mobileServers = document.getElementById("mobileServers");
+const mobileSearch  = document.getElementById("mobileSearch");
+const mbNotif       = document.getElementById("mbNotif");
+const dock          = document.getElementById("mobileDock");
 
 // ==================== Conectar WebSocket ====================
 connect(user);
@@ -59,6 +66,18 @@ toggleBtn?.addEventListener("click", () => {
 });
 closeBtn?.addEventListener("click", () => {
   sidebar?.classList.remove("is-visible");
+});
+
+// === Drawer de canales (móvil) ===
+openChannelsBtn?.addEventListener("click", () => {
+  // en móvil abre el drawer; en desktop no afecta
+  if (window.innerWidth <= 900) channelsbar?.classList.add("is-open");
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    channelsbar?.classList.remove("is-open");
+    sidebar?.classList.remove("is-visible");
+  }
 });
 
 // ==================== Render de mensajes de sistema (para demos de canal) ====================
@@ -157,19 +176,33 @@ function setActiveChannel(id, name) {
   setChannel(id);
 }
 
-// cambiar canal por click
+// cambiar canal por click (desktop + móvil)
 channelsbar?.addEventListener("click", (e) => {
   const btn = e.target.closest(".chan");
   if (!btn) return;
   const id   = btn.dataset.channelId;
   const name = btn.dataset.channelName || btn.querySelector("span")?.textContent?.trim() || "Canal";
   if (!id) return;
+
   setActiveChannel(id, name);
+
+  // --- cierre automático en móvil ---
+  if (window.innerWidth <= 900) {
+    channelsbar.classList.remove("is-open");   // cierra drawer de canales
+    sidebar?.classList.remove("is-visible");   // cierra panel de miembros si estaba abierto
+
+  }
+
+  // llevar chat al final y enfocar input
+  const main = document.querySelector('.chat-main');
+  main?.scrollTo({ top: main.scrollHeight, behavior: 'smooth' });
+  inputEl?.focus();
 });
 
-// campanita → Anuncios
+// campanita → Anuncios (sidebar)
 notifBtn?.addEventListener("click", () => {
   setActiveChannel("anuncios", "Anuncios");
+  if (window.innerWidth <= 900) channelsbar?.classList.remove("is-open");
 });
 
 // canal inicial
@@ -189,7 +222,7 @@ chatForm?.addEventListener("submit", (e) => {
   const text = messageInput?.value.trim();
   if (!text) return;
 
-  // 👇 importante: enviar el objeto user completo
+  // 👇 enviamos el objeto user completo (para avatar/nombre correctos)
   sendMessage(user, text, currentChannel.id);
   if (messageInput) messageInput.value = "";
 });

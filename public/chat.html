@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="./css/serversbar.css"/>
     <link rel="stylesheet" href="./css/channelsbar.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    
 </head>
 <body>
     <!-- Barra estática de servidores -->
@@ -141,12 +142,18 @@
 
     </aside>
     <div class="chat-container">
-        <header class="chat-header">
-            <h2 id="chat-username">Bienvenido</h2>
-            <div class="header-actions">
-                <button id="usersToggle" class="icon-btn"><i class="fa-solid fa-users"></i></button>
-                <button id="logoutBtn" class="icon-btn"><i class="fa-solid fa-right-from-bracket"></i></button>
-            </div>
+                <header class="chat-header">
+        <div class="header-actions">
+            <!-- abre canales drawer -->
+            <button id="openChannels" class="icon-btn" aria-label="Canales"><i class="fa-solid fa-bars"></i></button>
+        </div>
+
+        <h2 id="chat-username">Bienvenido</h2>
+
+        <div class="header-actions">
+            <!-- abre panel de miembros (tú ya tienes usersToggle) -->
+            <button id="usersToggle" class="icon-btn" aria-label="Miembros"><i class="fa-solid fa-users"></i></button>
+        </div>
         </header>
 
         <main class="chat-main">
@@ -184,28 +191,26 @@
         </div>
 
         <div class="members__scroll" id="membersScroll">
-            <!-- Grupos renderizados por JS -->
-            <!--
-            <section class="role-group">
-            <h4 class="role-group__title">
-                Administradores <span class="count">3</span>
-            </h4>
-            <ul class="member-list">
-                <li class="member">
-                <span class="member__avatar" style="--ring:#f97373">
-                    <img src="..." alt="">
-                </span>
-                <div class="member__meta">
-                    <div class="member__name">MIEMBRO #4141</div>
-                    <div class="member__sub">#4141</div>
-                </div>
-                <span class="member__status online"></span>
-                </li>
-            </ul>
-            </section>
-            -->
+
         </div>
         </aside>
+        <!-- Dock inferior móvil -->
+        <nav class="mobile-dock" id="mobileDock" aria-label="Dock móvil">
+        <div class="mobile-dock__grabber"></div>
+        <!-- fila de accesos/servidores (scroll horizontal) -->
+        <div class="mobile-dock__servers" id="mobileServers">
+        </div>
+        <!-- fila de search + campanita -->
+        <div class="mobile-dock__tools">
+            <div class="mobile-dock__search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input id="mobileSearch" type="text" placeholder="Search"/>
+            </div>
+            <button id="mbNotif" class="mobile-dock__icon" title="Notificaciones">
+            <i class="fa-solid fa-bell"></i>
+            </button>
+        </div>
+        </nav>
 
 
     <script type="module" src="./js/chat.js"></script>

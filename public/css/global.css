@@ -53,7 +53,7 @@
   --bubble-self: #cdcfd4;
 
   /* Sidebars */
-  --side-bg: #f9f9fb;    /* 👈 ahora también claro */
+  --side-bg: #f9f9fb;    
   --side-servers: #eae6ff;
   --side-card: #ffffff;
   --side-border: #d4d7dd;
@@ -108,9 +108,100 @@ body {
     opacity: 0.8;
 }
 
-/* Responsivo Global */
-@media (max-width: 600px) {
-    .chat-header h2 {
-        font-size: var(--font-size-md);
-    }
+/* ===== Mobile breakpoints ===== */
+@media (max-width: 900px){
+  :root{
+    --serversbar-w: 0px;   /* ocultamos barra de servidores */
+    --channelsbar-w: 0px;  /* canales pasan a drawer */
+    --header-h: 52px;
+  }
+
+  body{ overflow: hidden; } /* evita doble scroll fondo */
+
+  /* Chat ocupa todo */
+  .chat-container{
+    margin-left: 0 !important;
+    padding-top: var(--header-h);
+  }
+
+  /* Header sticky simplificado */
+  .chat-header{
+    left: 0 !important;
+    height: var(--header-h);
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Ocultar sidebars desktop */
+  .serversbar{ display: none; }
+  .channelsbar{ 
+    position: fixed;
+    inset: 0 0 0 0;             /* ocupa pantalla completa cuando esté visible */
+    background: var(--side-bg);
+    z-index: 500;
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+  }
+  .channelsbar.is-open { transform: translateX(0); }
+
+  /* “Drawer” de miembros (ya tienes #userSidebar) */
+  .user-sidebar{
+    right: -100%;
+    width: min(92vw, 360px);
+    top: var(--header-h);
+    border-left: 1px solid var(--border);
+    transition: right .25s ease;
+  }
+  .user-sidebar.is-visible{ right: 0; }
+
+  /* Evitar que el chat quede tapado por la bottom bar */
+  .chat-main{
+    padding-bottom: 84px; /* espacio para la bottom bar + input */
+  }
+
+  /* Bottom nav */
+  .mobile-bar{
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    height: 56px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    z-index: 450;
+  }
+  .mobile-bar__btn{
+    display: grid; place-items: center;
+    color: var(--text);
+    font-size: 18px;
+    background: none; border: 0;
+  }
+  .mobile-bar__btn.is-active{ color: var(--accent); }
+
+  /* Input fijo justo encima de la bottom bar */
+  .chat-input{
+    position: fixed;
+    left: 0; right: 0; bottom: 56px; /* encima de .mobile-bar */
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+  }
+
+  /* Canales: ancho cómodo y alto completo en móvil */
+  .channelsbar{
+    width: 100vw;
+    padding: 12px;
+    grid-template-rows: auto auto 1fr auto; 
+  }
+  .channelsbar__top{ gap: 8px; }
+  .channelsbar__search{ height: 42px; }
+  .chan{ height: 44px; font-size: 15px; }
+
+  /* “X” para cerrar drawer de canales (lo reusamos con el botón de campana si quieres) */
+  .channelsbar__close{
+    position: absolute; right: 12px; top: 12px;
+    width: 36px; height: 36px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--panel-bg-2);
+    color: var(--text-2); display:grid; place-items:center;
+  }
 }
+

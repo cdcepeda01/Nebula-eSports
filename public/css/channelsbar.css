@@ -1,5 +1,5 @@
 :root{
-  --serversbar-w: 72px;          /* ya definida en serversbar.css */
+  --serversbar-w: 72px;          
   --channelsbar-w: 300px;
 
   --layer-bg: #26272C;           /* columna base */
@@ -9,7 +9,7 @@
   --text-1: #e6e7eb;
   --text-2: #b9bbbe;
   --text-3: #34373C;
-  --accent: #8b5cf6;             /* morado */
+  --accent: #8b5cf6;            
   --radius: 12px;
 }
 
@@ -187,7 +187,7 @@
   background-position: center;
   box-shadow:
     0 1px 0 rgba(0,0,0,0.35) inset,
-    0 0 0 2px rgba(0,0,0,0.06) inset; /* borde interior suave */
+    0 0 0 2px rgba(0,0,0,0.06) inset; 
 }
 
 /* Contenido superpuesto (logo + título) */
@@ -213,8 +213,8 @@
 .server-banner__title{
   margin: 0;
   color: #fff;
-  font-size: 18px;       /* súbelo a 26–28 si lo quieres más grande */
-  font-weight: 800;      /* Bold tipo “display” */
+  font-size: 18px;      
+  font-weight: 800;      
   letter-spacing: 0.2px;
   text-shadow: 0 2px 6px rgba(0,0,0,0.45);
   margin-bottom: 40px;
@@ -269,3 +269,50 @@
 .switch input:checked + .slider{ background:#8b5cf6; }
 .switch input:checked + .slider::after{ transform: translateX(20px); }
 .switch-label{ font-size:12px; opacity:.8; }
+@media (max-width: 900px){
+  .channelsbar__close{ display: grid; }
+}
+@media (min-width: 901px){
+  .channelsbar__close{ display: none; }
+}
+/* =======================
+   MODO MÓVIL (drawer)
+   ======================= */
+@media (max-width: 900px){
+  /* La columna de canales  */
+  .channelsbar{
+    position: fixed;
+    top: var(--header-h);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    /* estilo */
+    background: var(--side-bg);
+    border-right: none;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    box-shadow: 0 -10px 30px rgba(0,0,0,.35);
+    padding: 12px;
+    /* comportamiento */
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    z-index: 1001; 
+    display: grid;
+    grid-template-rows: auto auto 1fr auto; 
+    gap: 12px;
+  }
+  /* visible cuando el JS añade .is-open */
+  .channelsbar.is-open{
+    transform: translateX(0);
+  }
+
+  /* ajustes de piezas internas para móvil */
+  .channelsbar__top{ gap: 8px; }
+  .channelsbar__search{ height: 42px; }
+  .chan{ height: 44px; font-size: 15px; }
+
+  /* asegúranos de que el chat no reserve espacio lateral */
+  .chat-container{ margin-left: 0 !important; padding-top: var(--header-h); }
+  .chat-header{ left: 0 !important; }
+}
