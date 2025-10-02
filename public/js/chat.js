@@ -42,8 +42,8 @@ const titleEl        = document.getElementById("chat-username");
 const inputEl        = document.getElementById("messageInput");
 const messagesEl     = document.getElementById("messages");
 const notifBtn       = document.getElementById("notifBtn");                 // campanita sidebar
-const searchInput    = document.querySelector('.channelsbar__search input'); // 🔎 sidebar
-const openChannelsBtn= document.getElementById("openChannels");              // botón ☰ header
+const searchInput    = document.querySelector('.channelsbar__search input'); // sidebar
+const openChannelsBtn= document.getElementById("openChannels");             // botón ☰ header
 
 // === Dock móvil ===
 const mobileServers = document.getElementById("mobileServers");
@@ -111,6 +111,9 @@ function renderMsg({ authorName, text, isSelf=false, color='#8b5cf6', isReply=fa
 // ==================== Canales ====================
 let currentChannel = null;
 
+// 💾 Cache DOM por canal
+const channelDOMCache = {};
+
 const ANNOUNCEMENTS = [
   "🏆 ¡Copa Nebula – Inscripciones abiertas hasta el viernes!",
   "🕒 Mañana 20:00 – Clasificatorio Valorant (BO3).",
@@ -146,6 +149,12 @@ function shuffle(arr) {
 
 function setActiveChannel(id, name) {
   const readonly = (id === "anuncios");
+
+  // Guarda el DOM del canal actual antes de cambiar
+  if (currentChannel && messagesEl) {
+    channelDOMCache[currentChannel.id] = messagesEl.innerHTML;
+  }
+
   currentChannel = { id, name, readonly };
 
   // activar botón
@@ -159,8 +168,21 @@ function setActiveChannel(id, name) {
 
   // render inicial
   if (!messagesEl) return;
+
   messagesEl.innerHTML = "";
 
+  // 🔁 Restaurar si hay caché para este canal
+  if (channelDOMCache[id]) {
+    messagesEl.innerHTML = channelDOMCache[id];
+    // Scroll al final del main (contenedor scrollable)
+    const main = document.querySelector('.chat-main');
+    main?.scrollTo({ top: main.scrollHeight });
+    // avisar al servidor igual
+    setChannel(id);
+    return;
+  }
+
+  // Si NO había caché, sembramos mensajes de demo como antes
   if (readonly) {
     shuffle(ANNOUNCEMENTS).slice(0, 5).forEach((text) => {
       renderMsg({ authorName: "Sistema", text, isSelf:false, color:"#5865f2" });
@@ -190,7 +212,6 @@ channelsbar?.addEventListener("click", (e) => {
   if (window.innerWidth <= 900) {
     channelsbar.classList.remove("is-open");   // cierra drawer de canales
     sidebar?.classList.remove("is-visible");   // cierra panel de miembros si estaba abierto
-
   }
 
   // llevar chat al final y enfocar input

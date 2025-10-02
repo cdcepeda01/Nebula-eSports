@@ -53,7 +53,6 @@ function setupChat(wss) {
       if (data.type === "chat") {
         const channel = data.channel || currentUser?.channel || "general";
 
-        // Rebota user tal cual llegó (obj o string) para que el cliente decida isSelf y avatar
         const payload = { type: "chat", user: data.user ?? { id: currentUser?.id, name: currentUser?.name, img: currentUser?.img }, text: data.text, channel };
 
         const inSameChannel = users.filter(u => u.channel === channel);

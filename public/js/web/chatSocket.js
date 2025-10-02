@@ -35,7 +35,7 @@ export function connect(user) {
           isSelf = String(data.user.id) === String(user.id);
         } else {
           author = String(data.user || "Usuario");
-          isSelf = author === user.name; // fallback por si llegara string
+          isSelf = author === user.name; 
         }
 
         addMessage({ author, text, isSelf, avatar });
